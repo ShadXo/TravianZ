@@ -11,7 +11,7 @@
 
 		class Ranking {
 
-			private $rankarray = array();
+			public $rankarray = array();
 			private $rlastupdate;
 
 			public function getRank() {
@@ -25,9 +25,12 @@
 			$users3 = $users2+1;
 			if(count($ranking) > 0) {
 			for($i=0;$i<($users3);$i++) {
-			if($ranking[$i]['userid'] == $id && $ranking[$i] != "pad") {
-			$myrank = $i;
-			}
+				if( isset( $ranking[$i]['userid'] ) )
+				{
+					if($ranking[$i]['userid'] == $id && $ranking[$i] != "pad") {
+						$myrank = $i;
+					}
+				}
 			}
 			}
 				return $myrank;
@@ -42,19 +45,35 @@
 							break;
 						case 8:
 							$this->procHeroRankArray();
-							$this->getStart($this->searchRank($session->uid, "owner"));
+							if($get['hero'] == 0) {
+								$this->getStart(1);
+							} else {
+								$this->getStart($this->searchRank($session->uid, "uid"));
+							}
 							break;
 						case 11:
 							$this->procRankRaceArray(1);
+							if($this->searchRank($session->uid, "userid") != 0){
 							$this->getStart($this->searchRank($session->uid, "userid"));
+							}else{
+							$this->getStart(1);
+							}
 							break;
 						case 12:
 							$this->procRankRaceArray(2);
+							if($this->searchRank($session->uid, "userid") != 0){
 							$this->getStart($this->searchRank($session->uid, "userid"));
+							}else{
+							$this->getStart(1);
+							}
 							break;
 						case 13:
 							$this->procRankRaceArray(3);
+							if($this->searchRank($session->uid, "userid") != 0){
 							$this->getStart($this->searchRank($session->uid, "userid"));
+							}else{
+							$this->getStart(1);
+							}
 							break;
 						case 31:
 							$this->procAttRankArray();
@@ -103,6 +122,9 @@
 				if(isset($post['ft'])) {
 					switch($post['ft']) {
 						case "r1":
+						case "r11":
+						case "r12":
+						case "r13":
 						case "r31":
 						case "r32":
 							if(isset($post['rank']) && $post['rank'] != "") {
@@ -112,10 +134,18 @@
 								$this->getStart($this->searchRank(stripslashes($post['name']), "username"));
 							}
 							break;
-						case "r2":
 						case "r4":
 						case "r42":
 						case "r41":
+							if(isset($post['rank']) && $post['rank'] != "") {
+								$this->getStart($post['rank']);
+							}
+							if(isset($post['name']) && $post['name'] != "") {
+								$this->getStart($this->searchRank(stripslashes($post['name']), "tag"));
+							}
+							break;
+						case "r2":
+						case "r8":
 							if(isset($post['rank']) && $post['rank'] != "") {
 								$this->getStart($post['rank']);
 							}
@@ -149,7 +179,7 @@
 				while(1) {
 					if(count($this->rankarray) > 1) {
 						$key = key($this->rankarray);
-						if($this->rankarray[$key]["id"] == $id) {
+						if(isset ($this->rankarray[$key]["id"]) && $this->rankarray[$key]["id"] === $id) {
 							return $key;
 							break;
 						} else {
@@ -166,11 +196,15 @@
 
 			public function searchRank($name, $field) {
 				while(1) {
-					$key = key($this->rankarray);
-					if($this->rankarray[$key][$field] == $name) {
-						return $key;
-						break;
-					} else {
+    //$key = key($this->rankarray);
+       for($key=0;$key<count($this->rankarray);$key++){
+        if($this->rankarray[$key]!="pad") {
+        if($this->rankarray[$key][$field] == $name) {
+            return $key;
+            break;
+        }
+       }    
+      }  
 						if(!next($this->rankarray)) {
 						if($field != "userid"){
 							return $name;
@@ -180,16 +214,16 @@
 							break;
 						}
 						}
-					}
+					
 				}
 			}
 
 			public function procRankArray() {
 				global $database, $multisort;
-				if($database->countUser() > 0){
+			if($database->countUser() > 0){
 			$holder = array();
 			if(SHOW_NATARS == True){
-			$q = "SELECT " . TB_PREFIX . "users.id userid, " . TB_PREFIX . "users.username username," . TB_PREFIX . "users.alliance alliance, (
+			$q = "SELECT " . TB_PREFIX . "users.id userid, " . TB_PREFIX . "users.username username, " . TB_PREFIX . "users.oldrank oldrank, " . TB_PREFIX . "users.alliance alliance, (
 
 			SELECT SUM( " . TB_PREFIX . "vdata.pop )
 			FROM " . TB_PREFIX . "vdata
@@ -210,7 +244,7 @@
 			WHERE " . TB_PREFIX . "users.access < " . (INCLUDE_ADMIN ? "10" : "8") . "
 			AND " . TB_PREFIX . "users.tribe <= 5 ORDER BY totalpop DESC, totalvillages DESC, userid DESC";
 			}else{
-			$q = "SELECT " . TB_PREFIX . "users.id userid, " . TB_PREFIX . "users.username username," . TB_PREFIX . "users.alliance alliance, (
+			$q = "SELECT " . TB_PREFIX . "users.id userid, " . TB_PREFIX . "users.username username, " . TB_PREFIX . "users.oldrank oldrank, " . TB_PREFIX . "users.alliance alliance, (
 
 			SELECT SUM( " . TB_PREFIX . "vdata.pop )
 			FROM " . TB_PREFIX . "vdata
@@ -240,6 +274,7 @@
 				foreach($datas as $result) {
 					$value['userid'] = $result['userid'];
 					$value['username'] = $result['username'];
+					$value['oldrank'] = $result['oldrank'];
 					$value['alliance'] = $result['alliance'];
 					$value['aname'] = $result['allitag'];
 					$value['totalpop'] = $result['totalpop'];
@@ -255,7 +290,7 @@
 			}
 			}
 
-			private function procRankRaceArray($race) {
+			public function procRankRaceArray($race) {
 				global $database, $multisort;
 				//$array = $database->getRanking();
 				$holder = array();
@@ -294,7 +329,6 @@
 
 
 					foreach($datas as $result) {
-						//$value = $array[$result['userid']];
 						$value['userid'] = $result['userid'];
 						$value['username'] = $result['username'];
 						$value['alliance'] = $result['alliance'];
@@ -321,7 +355,7 @@
 				$this->rankarray = $newholder;
 			}
 
-			private function procAttRankArray() {
+			public function procAttRankArray() {
 				global $database, $multisort;
 				//$array = $database->getRanking();
 				$holder = array();
@@ -348,10 +382,9 @@
 				}
 
 				foreach($datas as $key => $row) {
-					//$value = $array[$row['userid']];
+					$value['userid'] = $row['userid'];
 					$value['username'] = $row['username'];
 					$value['totalvillages'] = $row['totalvillages'];
-					//$value['totalvillage'] = $row['totalvillages'];
 					$value['id'] = $row['userid'];
 					$value['totalpop'] = $row['pop'];
 					$value['apall'] = $row['apall'];
@@ -367,7 +400,7 @@
 				$this->rankarray = $newholder;
 			}
 
-			private function procDefRankArray() {
+			public function procDefRankArray() {
 				//global $database, $multisort;
 				//$array = $database->getRanking();
 				$holder = array();
@@ -391,10 +424,9 @@
 				}
 
 				foreach($datas as $key => $row) {
-					//$value = $array[$row['userid']];
+					$value['userid'] = $row['userid'];
 					$value['username'] = $row['username'];
 					$value['totalvillages'] = $row['totalvillages'];
-					//$value['totalvillage'] = $row['totalvillages'];
 					$value['id'] = $row['userid'];
 					$value['totalpop'] = $row['pop'];
 					$value['dpall'] = $row['dpall'];
@@ -410,7 +442,7 @@
 				$this->rankarray = $newholder;
 			}
 
-			private function procVRankArray() {
+			public function procVRankArray() {
 				global $database, $multisort;
 				$array = $database->getVRanking();
 				$holder = array();
@@ -459,13 +491,14 @@
 				$this->rankarray = $newholder;
 			}
 
-			private function procHeroRankArray() {
+			public function procHeroRankArray() {
 				global $database, $multisort;
 				$array = $database->getHeroRanking();
 				$holder = array();
 				foreach($array as $value) {
 					$value['owner'] = $database->getUserField($value['uid'], "username", 0);
 					$value['level'];
+					$value['name'];
 					$value['uid'];
 
 					array_push($holder, $value);
@@ -478,7 +511,7 @@
 				$this->rankarray = $newholder;
 			}
 
-			private function procAAttRankArray() {
+			public function procAAttRankArray() {
 				global $database, $multisort;
 				$array = $database->getARanking();
 				$holder = array();
@@ -498,7 +531,7 @@
 
 					array_push($holder, $value);
 				}
-				$holder = $multisort->sorte($holder, "'totalap'", false, 2);
+				$holder = $multisort->sorte($holder, "'Aap'", false, 2);
 				$newholder = array("pad");
 				foreach($holder as $key) {
 					array_push($newholder, $key);
@@ -506,7 +539,7 @@
 				$this->rankarray = $newholder;
 			}
 
-			private function procADefRankArray() {
+			public function procADefRankArray() {
 				global $database, $multisort;
 				$array = $database->getARanking();
 				$holder = array();
@@ -526,7 +559,7 @@
 
 					array_push($holder, $value);
 				}
-				$holder = $multisort->sorte($holder, "'totaldp'", false, 2);
+				$holder = $multisort->sorte($holder, "'Adp'", false, 2);
 				$newholder = array("pad");
 				foreach($holder as $key) {
 					array_push($newholder, $key);

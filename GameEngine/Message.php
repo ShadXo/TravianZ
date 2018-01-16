@@ -118,6 +118,22 @@ class Message {
 			if($message['id'] == $id) {
 			$message = preg_replace('/\[message\]/', '', $message);
 			$message = preg_replace('/\[\/message\]/', '', $message);
+			for($i=1;$i<=$message['alliance'];$i++){
+			$message = preg_replace('/\[alliance'.$i.'\]/', '[alliance0]', $message);
+			$message = preg_replace('/\[\/alliance'.$i.'\]/', '[/alliance0]', $message);
+			}
+			for($i=0;$i<=$message['player'];$i++){
+			$message = preg_replace('/\[player'.$i.'\]/', '[player0]', $message);
+			$message = preg_replace('/\[\/player'.$i.'\]/', '[/player0]', $message);
+			}
+			for($i=0;$i<=$message['coor'];$i++){
+			$message = preg_replace('/\[coor'.$i.'\]/', '[coor0]', $message);
+			$message = preg_replace('/\[\/coor'.$i.'\]/', '[/coor0]', $message);
+			}
+			for($i=0;$i<=$message['report'];$i++){
+			$message = preg_replace('/\[report'.$i.'\]/', '[report0]', $message);
+			$message = preg_replace('/\[\/report'.$i.'\]/', '[/report0]', $message);
+			}
 				$this->reply = $_SESSION['reply'] = $message;
 				header("Location: nachrichten.php?t=1&id=" . $message['owner']);
 			}
@@ -301,10 +317,20 @@ class Message {
 
 	private function sendAMessage($topic,$text) {
 		global $session,$database;
+		
+		// Vulnerability closed by Shadow
+
+		$q = "SELECT * FROM ".TB_PREFIX."mdata WHERE owner='".$session->uid."' AND time > ".time()." - 60";
+		$res = mysql_query($q) or die(mysql_error(). " query  ".$q);
+		$flood = mysql_num_rows($res);
+		if($flood > 5)
+		return; //flood
+
+		// Vulnerability closed by Shadow
+			
 		$allmembersQ = mysql_query("SELECT id FROM ".TB_PREFIX."users WHERE alliance='".$session->alliance."'");
 		$userally = $database->getUserField($session->uid,"alliance",0);
 		$permission=mysql_fetch_array(mysql_query("SELECT opt7 FROM ".TB_PREFIX."ali_permission WHERE uid='".$session->uid."'"));
-
 		if(WORD_CENSOR) {
 		$topic = $this->wordCensor($topic);
 		$text = $this->wordCensor($text);
@@ -370,7 +396,7 @@ class Message {
 		if($permission[opt7]==1){
 		if ($userally != 0) {
 		while ($allmembers = mysql_fetch_array($allmembersQ)) {
-		$database->sendMessage($allmembers[id],$session->uid,$topic,$text,0,$alliance,$player,$coor,$report);
+		$database->sendMessage($allmembers[id],$session->uid,htmlspecialchars(addslashes($topic)),htmlspecialchars(addslashes($text)),0,$alliance,$player,$coor,$report);
 		}
 			}
 			}
@@ -380,6 +406,17 @@ class Message {
 	private function sendMessage($recieve, $topic, $text) {
 		global $session, $database;
 		$user = $database->getUserField($recieve, "id", 1);
+
+		// Vulnerability closed by Shadow
+
+		$q = "SELECT * FROM ".TB_PREFIX."mdata WHERE owner='".$session->uid."' AND time > ".time()." - 60";
+		$res = mysql_query($q) or die(mysql_error(). " query  ".$q);
+		$flood = mysql_num_rows($res);
+		if($flood > 5)
+		return; //flood
+
+		// Vulnerability closed by Shadow
+
 		if(WORD_CENSOR) {
 			$topic = $this->wordCensor($topic);
 			$text = $this->wordCensor($text);
@@ -390,18 +427,6 @@ class Message {
 		if(!preg_match('/\[message\]/',$text) && !preg_match('/\[\/message\]/',$text)){
 		$text = "[message]".$text."[/message]";
 		$alliance = $player = $coor = $report = 0;
-		for($i=0;$i<=$alliance;$i++){
-		if(preg_match('/\[alliance'.$i.'\]/',$text) && preg_match('/\[\/alliance'.$i.'\]/',$text)){
-		$alliance1 = preg_replace('/\[alliance'.$i.'\]/', '', $input);
-		$alliance1 = preg_replace('/\[\/alliance'.$i.'\]/', '', $alliance1);
-		if(preg_match('/\[alliance'.$i.'\]/',$alliance1) && preg_match('/\[\/alliance'.$i.'\]/',$alliance1)){
-		$j = $i+1;
-		$text = preg_replace('/\[alliance'.$i.'\]/', '/\[alliance'.$j.'\]/', $text);
-		$text = preg_replace('/\[\/alliance'.$i.'\]/', '/\[\/alliance'.$j.'\]/', $text);
-		$alliance += 1;
-		}
-		}
-		}
 		for($i=0;$i<=$alliance;$i++){
 		if(preg_match('/\[alliance'.$i.'\]/',$text) && preg_match('/\[\/alliance'.$i.'\]/',$text)){
 		$alliance1 = preg_replace('/\[message\](.*?)\[\/alliance'.$i.'\]/is', '', $text);
@@ -454,7 +479,7 @@ class Message {
 		}
 		}
 		}
-		$database->sendMessage($user, $session->uid, $topic, $text, 0, $alliance, $player, $coor, $report);
+		$database->sendMessage($user, $session->uid, htmlspecialchars(addslashes($topic)), htmlspecialchars(addslashes($text)), 0, $alliance, $player, $coor, $report);
 		}
 	}
 
@@ -473,8 +498,9 @@ class Message {
 		$welcomemsg = preg_replace("'%PLAYERS%'", $database->countUser(), $welcomemsg);
 		$welcomemsg = preg_replace("'%ALLI%'", $database->countAlli(), $welcomemsg);
 		$welcomemsg = preg_replace("'%SERVER_NAME%'", SERVER_NAME, $welcomemsg);
+                $welcomemsg = preg_replace("'%PROTECTION%'", (PROTECTION/3600), $welcomemsg);
 		$welcomemsg = "[message]".$welcomemsg."[/message]";
-		return $database->sendMessage($uid, 5, WEL_TOPIC, addslashes($welcomemsg), 0, 0, 0, 0, 0);
+		return $database->sendMessage($uid, 1, WEL_TOPIC, addslashes($welcomemsg), 0, 0, 0, 0, 0);
 	}
 
 	private function wordCensor($text) {

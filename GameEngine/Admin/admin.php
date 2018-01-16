@@ -1,4 +1,22 @@
-<?php###################################################################################              -= YOU MAY NOT REMOVE OR CHANGE THIS NOTICE =-                 #### --------------------------------------------------------------------------- ####  Filename       admin.php                                                   ####  Developed by:  Dzoki                                                       ####  License:       TravianX Project                                            ####  Copyright:     TravianX (c) 2010-2011. All rights reserved.                ####                                                                             ###################################################################################
+<?php
+#################################################################################
+##                                                                             ##
+##              -= YOU MUST NOT REMOVE OR CHANGE THIS NOTICE =-                ##
+##                                                                             ##
+## --------------------------------------------------------------------------- ##
+##                                                                             ##
+##  Project:       TravianZ                                                    ##
+##  Version:       05.03.2014                                                  ##
+##  Filename:      Admin/admin.php     				                           ##
+##  Developed by:  Dzoki                                                       ##
+##  Edited by:     Shadow and ronix                                            ##
+##  License:       Creative Commons BY-NC-SA 3.0                               ##
+##  Copyright:     TravianZ (c) 2014 - All rights reserved                     ##
+##  URLs:          http://travian.shadowss/ro                                  ##
+##  Source code:   https://github.com/Shadowss/TravianZ	                       ##
+##                                                                             ##
+#################################################################################
+
 session_start();
 include("../GameEngine/Database.php");
 include("../GameEngine/Admin/database.php");
@@ -48,13 +66,13 @@ if(conf){return true;}else{return false;}
 <td class="menu">
 <?php
   if($funct->CheckLogin()){?>
-	  <a href="admin.php">ACP Home</a>	  <a href="<?php echo HOMEPAGE; ?>">Homepage</a>	  <a href="#"></a><a href="#"></a>	  <a href="?p=server_info">Server Info</a>
+	  <a href="admin.php">ACP Home</a>	  <a href="<?php echo HOMEPAGE; ?>">Homepage</a>	  <a href="#"></a><a href="#"></a>	  <a href="?p=server_info">Server Info</a>
 	  <a href="?p=online">Online users</a>
 	  <a href="?p=search">Search</a>
 	  <a href="?p=message">Msg/Rep</a>
 	  <a href="?p=ban">Ban</a>
 	  <a href="?p=config">Config</a>
-	  <a href="?p=config_editor">Config Editor</a>	  <a href="#"></a><a href="#"></a><a href="#"></a>
+	  <a href="?p=config_editor">Config Editor</a>	  <a href="#"></a><a href="#"></a><a href="#"></a>
 	  <a href="?action=logout">Logout</a>
 <?php }?>
 </td>

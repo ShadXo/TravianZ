@@ -27,16 +27,7 @@ if(isset($_GET['newdid'])) {
 else {
 	$building->procBuild($_GET);
 }
- 	
-if(isset($_POST['uid'])){
-if($_POST['uid'] != $session->uid){
-	die();
-  header("Location: ".$_SERVER['PHP_SELF']);
-}elseif($_POST['uid'] == $session->uid){
-    //$database->updateUserField($session->uid,"password",md5($_POST['pw']),1);
-  header("Location: ".$_SERVER['PHP_SELF']);
-}
-}
+
 if(isset($_GET['s'])){
 $automation->isWinner();
 }
@@ -156,11 +147,12 @@ else if (isset($_GET['s'])) {
 	if($_GET['s'] == 4) {
 		include("Templates/Profile/graphic.tpl");
 	}
-	if($_GET['s'] > 4 or $session->sit == 1) {
+	if($_GET['s'] == 5) {
+	include("Templates/Profile/vacation.tpl");
+	}
+	if($_GET['s'] > 5 or $session->sit == 1) {
 	header("Location: ".$_SERVER['PHP_SELF']."?uid=".preg_replace("/[^a-zA-Z0-9_-]/","",$session->uid));
 	}
-}else{
-	header("Location: spieler.php?s=3");
 }
 ?>
 </div>

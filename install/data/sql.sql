@@ -428,6 +428,22 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%chat` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `%prefix%config`
+--
+
+CREATE TABLE IF NOT EXISTS `%PREFIX%config` (
+  `lastgavemedal` int(11) unsigned NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+INSERT INTO `%PREFIX%config` VALUES (0);
+
+--
+-- Dumping data for table `%prefix%config`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `%prefix%deleting`
 --
 
@@ -717,11 +733,49 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%forum_post` (
   `topic` varchar(255) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `date` varchar(255) NOT NULL,
+  `alliance0` int(11) unsigned NOT NULL,
+  `player0` int(11) unsigned NOT NULL,
+  `coor0` int(11) unsigned NOT NULL,
+  `report0` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `%prefix%forum_post`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `%prefix%forum_survey`
+--
+
+CREATE TABLE IF NOT EXISTS `%PREFIX%forum_survey` (
+  `topic` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `option1` varchar(255) NOT NULL,
+  `option2` varchar(255) NOT NULL,
+  `option3` varchar(255) NOT NULL,
+  `option4` varchar(255) NOT NULL,
+  `option5` varchar(255) NOT NULL,
+  `option6` varchar(255) NOT NULL,
+  `option7` varchar(255) NOT NULL,
+  `option8` varchar(255) NOT NULL,
+  `vote1` int(11) unsigned NOT NULL DEFAULT '0',
+  `vote2` int(11) unsigned NOT NULL DEFAULT '0',
+  `vote3` int(11) unsigned NOT NULL DEFAULT '0',
+  `vote4` int(11) unsigned NOT NULL DEFAULT '0',
+  `vote5` int(11) unsigned NOT NULL DEFAULT '0',
+  `vote6` int(11) unsigned NOT NULL DEFAULT '0',
+  `vote7` int(11) unsigned NOT NULL DEFAULT '0',
+  `vote8` int(11) unsigned NOT NULL DEFAULT '0',
+  `voted` text NOT NULL,
+  `ends` int(11) unsigned NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `%prefix%forum_survey`
 --
 
 
@@ -743,6 +797,10 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%forum_topic` (
   `ends` varchar(255) NOT NULL,
   `close` varchar(255) NOT NULL,
   `stick` varchar(255) NOT NULL,
+  `alliance0` int(11) unsigned NOT NULL,
+  `player0` int(11) unsigned NOT NULL,
+  `coor0` int(11) unsigned NOT NULL,
+  `report0` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -970,7 +1028,7 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%movement` (
   `ref` int(11) unsigned NOT NULL DEFAULT '0',
   `ref2` int(11) unsigned NOT NULL DEFAULT '0',
   `starttime` int(11) unsigned NOT NULL DEFAULT '0',
-  `endtime` int(11) unsigned NOT NULL DEFAULT '0',
+  `endtime`  int(11) unsigned NOT NULL DEFAULT '0',
   `proc` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `send` tinyint(1) unsigned NOT NULL,
   `wood` int(11) unsigned NOT NULL,
@@ -1028,7 +1086,8 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%odata` (
   `crop` int(11) unsigned NOT NULL,
   `maxcrop` int(11) unsigned NOT NULL,
   `lastupdated` int(11) unsigned NOT NULL,
-  `loyalty` int(11) NOT NULL DEFAULT '100',
+  `lastupdated2` int(11) unsigned NOT NULL,
+  `loyalty` float(9,6) unsigned NOT NULL DEFAULT '100',
   `owner` int(11) unsigned NOT NULL DEFAULT '2',
   `name` varchar(32) NOT NULL DEFAULT 'Unoccupied Oasis',
   `high` tinyint(1) unsigned NOT NULL,
@@ -1441,6 +1500,10 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%users` (
   `friend18wait` int(11) unsigned NOT NULL,
   `friend19wait` int(11) unsigned NOT NULL,
   `maxevasion` mediumint(3) unsigned NOT NULL,
+  `village_select` bigint(20) DEFAULT NULL,
+  `vac_time` varchar(255) NOT NULL,
+  `vac_mode` int(2) unsigned NOT NULL DEFAULT '0',
+  `vactwoweeks` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
@@ -1476,6 +1539,7 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%vdata` (
 `crop` float(12,2) NOT NULL,
 `maxcrop` int(11) unsigned NOT NULL,
 `lastupdate` int(11) unsigned NOT NULL,
+`lastupdate2` int(11) unsigned NOT NULL,  
 `loyalty` float(9,6) unsigned NOT NULL DEFAULT '100',
 `exp1` int(11) NOT NULL,
 `exp2` int(11) NOT NULL,
@@ -1486,7 +1550,7 @@ CREATE TABLE IF NOT EXISTS `%PREFIX%vdata` (
 `starvupdate` int(11) unsigned NOT NULL,
 `evasion` tinyint(1) unsigned NOT NULL,
 PRIMARY KEY (`wref`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `%prefix%vdata`

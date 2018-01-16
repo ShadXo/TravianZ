@@ -11,6 +11,7 @@
 #################################################################################
 
 include('GameEngine/Account.php');
+$invited=(isset($_GET['uid'])) ? filter_var($_GET['uid'], FILTER_SANITIZE_NUMBER_INT):$form->getError('invt');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -48,14 +49,14 @@ if(REG_OPEN == true){ ?>
 <p><?php echo BEFORE_REGISTER; ?></p>
 
 <form name="snd" method="post" action="anmelden.php">
-<input type="hidden" name="invited" value="<?php echo filter_var($_GET['id'], FILTER_SANITIZE_NUMBER_INT); ?>" />
+<input type="hidden" name="invited" value="<?php echo $invited; ?>" />
 <input type="hidden" name="ft" value="a1" />
 
 <table cellpadding="1" cellspacing="1" id="sign_input">
 	<tbody>
 		<tr class="top">
 			<th><?php echo NICKNAME; ?></td>
-			<td><input class="text" type="text" name="name" value="<?php echo $form->getValue('name'); ?>" maxlength="20" />
+			<td><input class="text" type="text" name="name" value="<?php echo $form->getValue('name'); ?>" maxlength="30" />
 			<span class="error"><?php echo $form->getError('name'); ?></span>
 			</td>
 		</tr>
@@ -66,11 +67,10 @@ if(REG_OPEN == true){ ?>
 				<span class="error"><?php echo $form->getError('email'); ?></span>
 				</td>
 			</tr>
-		<tr class="btm">
+		<tr>
 			<th><?php echo PASSWORD; ?></th>
 			<td>
-				<input class="text" type="password" name="pw" value="<?php echo stripslashes($form->getValue('pw')); ?>" maxlength="20" />
-				<span style="color: #DD0000"><b>Warning:</b> password with & can cause problems!</span>
+				<input class="text" type="password" name="pw" value="<?php echo stripslashes($form->getValue('pw')); ?>" maxlength="100" />
 				<span class="error"><?php echo $form->getError('pw'); ?></span>
 			</td>
 		</tr>

@@ -40,7 +40,7 @@ while($row = mysql_fetch_array($sql)){
             <tr>
                 <td class="checkbox edit"></td>
                 <td class="village sortable" onclick="Travian.Game.RaidList.sort(<?php echo $lid; ?>, 'village');">Village</td>
-                <td class="ew sortable" onclick="Travian.Game.RaidList.sort(<?php echo $lid; ?>, 'ew');">Ew</td>
+                <td class="ew sortable" onclick="Travian.Game.RaidList.sort(<?php echo $lid; ?>, 'ew');">Pop</td>
                 <td class="distance sortable" onclick="Travian.Game.RaidList.sort(<?php echo $lid; ?>, 'distance');">Distance</td>
                 <td class="troops sortable" onclick="Travian.Game.RaidList.sort(<?php echo $lid; ?>, 'troops');">Troops</td>
                 <td class="lastRaid sortable" onclick="Travian.Game.RaidList.sort(<?php echo $lid; ?>, 'lastRaid');">LastRaid</td>
@@ -53,7 +53,7 @@ while($row = mysql_fetch_array($sql)){
 $sql2 = mysql_query("SELECT * FROM ".TB_PREFIX."raidlist WHERE lid = $lid ORDER BY distance ASC");
 $query2 = mysql_num_rows($sql2);
 if($query2 == 0) {        
-    echo '<td class="noData" colspan="7">There is no any raid list.</td>';
+    echo '<td class="noData" colspan="7">There is not any raid list.</td>';
 }else{
 while($row = mysql_fetch_array($sql2)){ 
 $id= $row['id'];$lid = $row['lid'];$towref = $row['towref'];$x = $row['x'];$y = $row['y'];
@@ -94,22 +94,22 @@ $vdata = $database->getVillage($towref);
         ?>
                 <label for="slot<?php echo $id; ?>">
                 <?php
-                    $type = $database->getVillageType2($towref);
-                    $oasistype = $type['oasistype'];
+                    $oasistype = $database->getVillageType2($towref);
                     if($oasistype != 0){
+                        $thisVillageName = 'Oasis';
+                    }
+                    else
+                    {
+                        $thisVillageName = $vdata["name"];
+                    }
                 ?>
                 <span class="coordinates coordinatesWithText">
-                <span class="coordText">Oasis</span>
+                <span class="coordText"><?php echo $thisVillageName; ?></span>
                 <span class="coordinatesWrapper">
                 <span class="coordinateY">(<?php echo $x; ?></span>
                 <span class="coordinatePipe">|</span>
                 <span class="coordinateX"><?php echo $y; ?>)</span>
-                </span></span><?php;}else{?>
-                <span class="coordinates coordinatesWithText">
-                <span class="coordText"><?php echo $vdata['name']; ?></span>
-                </span>
-                <?php } ?>
-                
+                </span></span>
                 <span class="clear">‎</span>
                 </label>
             </td>
@@ -192,7 +192,7 @@ $vdata = $database->getVillage($towref);
 <?php
 $noticeClass = array("Scout Report","Won as attacker without losses","Won as attacker with losses","Lost as attacker with losses","Won as defender without losses","Won as defender with losses","Lost as defender with losses","Lost as defender without losses","Reinforcement arrived","","Wood Delivered","Clay Delivered","Iron Delivered","Crop Delivered","","Won as defender without losses","Won as defender with losses","Lost as defender with losses","Won scouting as attacker","Lost scouting as attacker","Won scouting as defender","Lost scouting as defender");
 $limits = "(ntype=1 or ntype=2 or ntype=3 or ntype=18 or ntype=19 or ntype=22)";
-$getnotice = mysql_query("SELECT * FROM ".TB_PREFIX."ndata WHERE $limits AND toWref = ".$towref." ORDER BY time DESC Limit 1");
+$getnotice = mysql_query("SELECT * FROM ".TB_PREFIX."ndata WHERE $limits AND toWref = ".$towref." AND uid = ".$session->uid." ORDER BY time DESC Limit 1");
 if(mysql_num_rows($getnotice) > 0){
 while($row2 = mysql_fetch_array($getnotice)){
     $dataarray = explode(",",$row2['data']);

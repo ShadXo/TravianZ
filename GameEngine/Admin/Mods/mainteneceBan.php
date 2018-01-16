@@ -8,7 +8,8 @@
 ##  Copyright:     TravianX (c) 2010-2012. All rights reserved.                ##
 ##                                                                             ##
 #################################################################################
-
+if (!isset($_SESSION)) session_start();
+if($_SESSION['access'] < 9) die("Access Denied: You are not Admin!");
 include_once("../../config.php");
 
 mysql_connect(SQL_SERVER, SQL_USER, SQL_PASS);
@@ -42,8 +43,8 @@ for($i = 0; $i < $loops + 1; $i++)
 	$result = mysql_query($query);
 	while($row = mysql_fetch_assoc($result))
 	{
-		##mysql_query("INSERT INTO ".TB_PREFIX."banlist ".$row['id'].", ".$row['username'].", ".$reason.", ".$startts.", ".$endts.", ".$admin.", ".$active."");
-		mysql_query("INSERT INTO ".TB_PREFIX."banlist (`uid`, `name`, `reason`, `time`, `end`, `admin`, `active`) VALUES (".$row['id'].", '".$row['username']."' , '$reason', '$startts', '$endts', '$admin', '1')");
+		mysql_query("INSERT INTO ".TB_PREFIX."banlist ".$row['id'].", ".$row['username'].", ".$reason.", ".$startts.", ".$endts.", ".$admin.", ".$active."");
+		##mysql_query("INSERT INTO ".TB_PREFIX."banlist (`uid`, `name`, `reason`, `time`, `end`, `admin`, `active`) VALUES (".$row['id'].", '".$row['username']."' , '$reason', '$startts', '$endts', '$admin', '1')");
 	}
 }
 

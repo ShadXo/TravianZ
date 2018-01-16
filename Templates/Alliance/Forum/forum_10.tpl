@@ -1,20 +1,35 @@
 <?php
-//////////////// made by TTMTT ////////////////
+############################################################
+##              DO NOT REMOVE THIS NOTICE                 ##
+##                    MADE BY TTMTT                       ##
+##                     FIX BY RONIX                       ##
+##                       TRAVIANZ                         ##
+############################################################
 if($session->access!=BANNED){
 $topic_id = $_GET['pod'];
 $post_id = $_GET['pod'];
 $topics = $database->ShowTopic($topic_id);
 $posts = $database->ShowPostEdit($post_id);
 foreach($topics as $top) {
-	$title = $top['title'];
+	$title = stripslashes($top['title']);
 }
 foreach($posts as $pos) {
-	$poss = $pos['post'];
+	$poss = stripslashes($pos['post']);
+	$poss = preg_replace('/\[message\]/', '', $poss);
+	$poss = preg_replace('/\[\/message\]/', '', $poss);
+	$alliance0 = $pos['alliance0'];
+	$player0 = $pos['player0'];
+	$coor0 = $pos['coor0'];
+	$report0 = $pos['report0'];
 }
 ?>
 <form method="post" name="post" action="allianz.php?s=2&fid2=<?php echo $_GET['fid2']; ?>&pid=<?php echo $_GET['pid']; ?>&tid=<?php echo $_GET['idt']; ?>">
 	<input type="hidden" name="s" value="2">
 	<input type="hidden" name="pod" value="<?php echo $_GET['pod']; ?>">
+	<input type="hidden" name="alliance0" value="<?php echo $alliance0; ?>">
+	<input type="hidden" name="player0" value="<?php echo $player0; ?>">
+	<input type="hidden" name="coor0" value="<?php echo $coor0; ?>">
+	<input type="hidden" name="report0" value="<?php echo $report0; ?>">
 	<input type="hidden" name="editpost" value="1">
 <table cellpadding="1" cellspacing="1" id="edit_post"><thead>
 	<tr>
